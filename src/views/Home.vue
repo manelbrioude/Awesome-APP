@@ -1,18 +1,47 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <v-content>
+      <h1 class="text-center">List Of Cards</h1>
+      <PopUp class="center" />
+      <Cardslist />
+    </v-content>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import Cardslist from "../components/Cardslist";
+import PopUp from "../components/PopUp";
 
 export default {
   name: "Home",
   components: {
-    HelloWorld
+    Cardslist,
+    PopUp
+  },
+  data() {
+    return {};
+  },
+  created() {
+    window.addEventListener("scroll", this.handleScroll());
+  },
+  methods: {
+    Morecards() {
+      this.$store.dispatch("getmorecards");
+    },
+    handleScroll() {
+      const padding = 1;
+      window.onscroll = ev => {
+        if (
+          window.innerHeight + window.scrollY + padding >=
+          document.body.offsetHeight
+        ) {
+          console.log("is down", ev);
+          this.Morecards();
+        }
+      };
+    }
   }
 };
 </script>
+<style scoped>
+</style>
