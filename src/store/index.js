@@ -29,7 +29,7 @@ export default new Vuex.Store({
       state.cards = [];
     },
     cardsLoaded: state => {
-      state.cardsLoaded = state.cardsLoaded + 10 - state.numberOfNewCards;
+      state.cardsLoaded = state.cardsLoaded + 10;
       console.log("cuants cartas:", state.cardsLoaded);
     },
     fillCards: (state, payload) => {
@@ -89,7 +89,7 @@ export default new Vuex.Store({
       }
     },
     getmorecards({ state, commit, dispatch }) {
-      if (state.cardsLoaded < 100) {
+      if (state.cardsLoaded < 100 + state.numberOfNewCards) {
         axios
           .get("Data.json")
           .then(function(res) {
