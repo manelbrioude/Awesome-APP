@@ -35,13 +35,12 @@ export default {
           window.innerHeight + window.scrollY + padding >=
           document.body.offsetHeight
         ) {
-          console.log("is down", ev);
           this.Morecards();
         }
+        console.log(ev);
       };
     }
   }
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

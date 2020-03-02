@@ -9,6 +9,7 @@ export default new Vuex.Store({
     cards: [],
     cardsCreated: [],
     cardsloaded: 0,
+    numberOfNewCards: 0,
     newDate: {
       newYear: 0,
       newMonth: 0,
@@ -16,6 +17,16 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    joinBothArrays: state => {
+      console.log(state.cardsCreated[0].firstname);
+      for (var n = 0; n <= state.cardsCreated.length; n++) {
+        console.log(state.cardsCreated[n]);
+        state.cards.push(state.cardsCreated[n]);
+      }
+    },
+    newCard: state => {
+      state.numberOfNewCards++;
+    },
     clearCards: state => {
       state.cards = [];
     },
@@ -99,12 +110,13 @@ export default new Vuex.Store({
           });
       }
     },
-    addNewCard({ state }, payload) {
-      if (state.cards.length == 0) {
-        payload.id = state.cards.length;
-        console.log(payload);
-        state.cardsCreated.push(payload);
-      }
+    addNewCard({ state, commit }, payload) {
+      commit("newCard");
+      payload.id = state.numberOfNewCards;
+      state.cardsCreated.push(payload);
+      commit("joinBothArrays");
+      console.log(payload);
+      commit("getAge", payload);
     }
   },
 

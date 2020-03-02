@@ -71,7 +71,6 @@ export default {
   methods: {
     Submit() {
       if (this.$refs.form.validate()) {
-        console.log(this.formResults);
         this.$store.commit("clearCards");
         this.$store.dispatch("addNewCard", this.formResults);
       }
