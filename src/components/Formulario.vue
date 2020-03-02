@@ -27,7 +27,13 @@
           min-width="290px"
         >
           <template v-slot:activator="{ on }">
-            <v-text-field v-model="formResults.birthdate" label="Birthdate" readonly v-on="on"></v-text-field>
+            <v-text-field
+              v-model="formResults.birthdate"
+              label="Birthdate"
+              readonly
+              v-on="on"
+              :rules="birthdateRules"
+            ></v-text-field>
           </template>
           <v-date-picker v-model="formResults.birthdate" scrollable>
             <v-spacer></v-spacer>
@@ -43,6 +49,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "Formulario",
   data() {
@@ -54,7 +61,7 @@ export default {
         email: "",
         gender: "",
         birthdate: "",
-        id: ""
+        id: 1
       },
       items: ["Male", "Female"],
       nameRules: [v => (v && v.length >= 3) || "Minum length is 3 characters"],
@@ -64,17 +71,21 @@ export default {
           /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
           "E-mail must be valid"
       ],
-      genderRules: [v => v.length > 0 || "An option must be selected"]
+      genderRules: [v => v.length > 0 || "An option must be selected"],
+      birthdateRules: [v => (v && v.length >= 3) || "You need to choose a date"]
     };
   },
 
   methods: {
     Submit() {
       if (this.$refs.form.validate()) {
-        this.$store.commit("clearCards");
+        console.log("new card added", this.formResults);
         this.$store.dispatch("addNewCard", this.formResults);
       }
     }
+  },
+  computed: {
+    ...mapGetters(["today"])
   }
 };
 </script>

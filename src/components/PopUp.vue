@@ -1,5 +1,5 @@
 <template>
-  <v-dialog max-width="600" ref="popUP">
+  <v-dialog class="mx-auto" max-width="600" ref="popUP">
     <template v-slot:activator="{ on }">
       <v-btn color="red lighten-2" dark v-on="on">Add new card</v-btn>
     </template>

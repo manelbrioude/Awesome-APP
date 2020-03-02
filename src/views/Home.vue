@@ -2,7 +2,9 @@
   <div class="home">
     <v-content>
       <h1 class="text-center">List Of Cards</h1>
-      <PopUp class="center" />
+      <div class="button">
+        <PopUp />
+      </div>
       <Cardslist />
     </v-content>
   </div>
@@ -30,17 +32,17 @@ export default {
     },
     handleScroll() {
       const padding = 1;
-      window.onscroll = ev => {
+      window.onscroll = () => {
         if (
           window.innerHeight + window.scrollY + padding >=
           document.body.offsetHeight
         ) {
           this.Morecards();
         }
-        console.log(ev);
       };
     }
   }
 };
 </script>
-<style scoped></style>
+<style scoped>
+</style>

@@ -6,10 +6,12 @@ Vue.use(Vuex, axios);
 export default new Vuex.Store({
   state: {
     menu: "",
+    firstsCardsAlreadyCreated: false,
     cards: [],
     cardsCreated: [],
-    cardsloaded: 0,
+    cardsLoaded: 0,
     numberOfNewCards: 0,
+    cardCreated: false,
     newDate: {
       newYear: 0,
       newMonth: 0,
@@ -17,12 +19,8 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    joinBothArrays: state => {
-      console.log(state.cardsCreated[0].firstname);
-      for (var n = 0; n <= state.cardsCreated.length; n++) {
-        console.log(state.cardsCreated[n]);
-        state.cards.push(state.cardsCreated[n]);
-      }
+    AlreadyCardsCreated: state => {
+      state.firstsCardsAlreadyCreated = true;
     },
     newCard: state => {
       state.numberOfNewCards++;
@@ -30,31 +28,22 @@ export default new Vuex.Store({
     clearCards: state => {
       state.cards = [];
     },
-    cardsloaded: state => {
-      state.cardsloaded = state.cardsloaded + 10;
-      console.log("cuants cartas:", state.cardsloaded);
+    cardsLoaded: state => {
+      state.cardsLoaded = state.cardsLoaded + 10 - state.numberOfNewCards;
+      console.log("cuants cartas:", state.cardsLoaded);
     },
-    fillcards: (state, payload) => {
+    fillCards: (state, payload) => {
       state.cards.push(payload);
     },
-
-    getAge: (state, payload) => {
-      var birthdate = payload.birthdate.split("-");
-      var birthYear = birthdate[0];
-      var birthMonth = birthdate[1];
-      var birthDay = birthdate[2];
-      var Age = state.newDate.newYear - birthYear;
-      if (
-        state.newDate.newMonth < birthMonth ||
-        (state.newDate.newMonth == birthMonth &&
-          state.newDate.newDay < birthDay)
-      ) {
-        Age = Age - 1;
-      }
-      var cardid = payload.id;
-      state.cards[cardid - 1].birthdate =
-        payload.birthdate + " " + "Age: " + Age;
+    fillNewCards: (state, payload) => {
+      state.cardsCreated.push(payload);
     },
+    changeId: state => {
+      for (var n = 0; n < state.cards.length; n++) {
+        state.cards[n].id = state.cards[n].id + 1;
+      }
+    },
+
     newDay: state => {
       var today = new Date();
       var year = today.getFullYear();
@@ -63,46 +52,53 @@ export default new Vuex.Store({
       state.newDate.newYear = year;
       state.newDate.newMonth = month;
       state.newDate.newDay = day;
+    },
+    changeCardCreated: state => {
+      state.cardCreated = !state.cardCreated;
     }
   },
   actions: {
-    getcards({ state, commit }) {
-      axios
-        .get("Data.json")
-        .then(function(res) {
-          var newcards = res.data.slice(
-            state.cardsloaded,
-            state.cardsloaded + 10
-          );
-          for (var n = 0; n < newcards.length; n++) {
-            var newcard = newcards[n];
-            console.log(newcard.birthdate);
-            commit("fillcards", newcard);
-            commit("getAge", newcard);
-          }
-          commit("cardsloaded");
-        })
+    getcards({ state, commit, dispatch }) {
+      if (state.firstsCardsAlreadyCreated == false) {
+        commit("AlreadyCardsCreated");
 
-        .catch(function(error) {
-          console.log("Error: ", error);
-        });
-    },
-    getmorecards({ state, commit }) {
-      if (state.cardsloaded < 100) {
         axios
           .get("Data.json")
           .then(function(res) {
             var newcards = res.data.slice(
-              state.cardsloaded,
-              state.cardsloaded + 10
+              state.cardsLoaded,
+              state.cardsLoaded + 10
+            );
+            for (var n = 0; n < newcards.length; n++) {
+              var newcard = newcards[n];
+              console.log(newcard.birthdate);
+
+              dispatch("getAge", newcard);
+            }
+            commit("cardsLoaded");
+          })
+
+          .catch(function(error) {
+            console.log("Error: ", error);
+          });
+      }
+    },
+    getmorecards({ state, commit, dispatch }) {
+      if (state.cardsLoaded < 100) {
+        axios
+          .get("Data.json")
+          .then(function(res) {
+            var newcards = res.data.slice(
+              state.cardsLoaded,
+              state.cardsLoaded + 10
             );
 
             for (var n = 0; n < newcards.length; n++) {
               var newcard = newcards[n];
-              commit("fillcards", newcard);
-              commit("getAge", newcard);
+
+              dispatch("getAge", newcard);
             }
-            commit("cardsloaded");
+            commit("cardsLoaded");
           })
 
           .catch(function(err) {
@@ -110,17 +106,42 @@ export default new Vuex.Store({
           });
       }
     },
-    addNewCard({ state, commit }, payload) {
+    addNewCard({ commit, dispatch }, payload) {
       commit("newCard");
-      payload.id = state.numberOfNewCards;
-      state.cardsCreated.push(payload);
-      commit("joinBothArrays");
-      console.log(payload);
-      commit("getAge", payload);
+      commit("changeId");
+      commit("changeCardCreated");
+      dispatch("getAge", payload);
+
+      // commit("getAge", payload);
+    },
+    getAge({ state, commit }, payload) {
+      var birthdate = payload.birthdate.split("-");
+      var birthYear = birthdate[0];
+      var birthMonth = birthdate[1];
+      var birthDay = birthdate[2];
+      var Age = state.newDate.newYear - birthYear;
+
+      if (
+        state.newDate.newMonth < birthMonth ||
+        (state.newDate.newMonth == birthMonth &&
+          state.newDate.newDay < birthDay)
+      ) {
+        Age = Age - 1;
+      }
+      payload.birthdate = payload.birthdate + " " + "Age: " + Age;
+
+      if (state.cardCreated == false) {
+        commit("fillCards", payload);
+      } else {
+        commit("fillNewCards", payload);
+        state.cards.unshift(payload);
+        commit("changeCardCreated");
+      }
     }
   },
 
   getters: {
-    cards: state => state.cards
+    cards: state => state.cards,
+    today: state => state.newDate
   }
 });
