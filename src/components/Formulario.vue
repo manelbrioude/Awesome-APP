@@ -49,7 +49,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 export default {
   name: "Formulario",
   data() {
@@ -83,9 +82,6 @@ export default {
         this.$store.dispatch("addNewCard", this.formResults);
       }
     }
-  },
-  computed: {
-    ...mapGetters(["today"])
   }
 };
 </script>

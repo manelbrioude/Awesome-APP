@@ -55,6 +55,11 @@ export default new Vuex.Store({
     },
     changeCardCreated: state => {
       state.cardCreated = !state.cardCreated;
+    },
+    joinArrays: state => {
+      for (var n = 0; n < state.cardsCreated.length; n++) {
+        state.cards.unshift(state.cardsCreated[n]);
+      }
     }
   },
   actions: {
@@ -95,7 +100,7 @@ export default new Vuex.Store({
 
             for (var n = 0; n < newcards.length; n++) {
               var newcard = newcards[n];
-
+              newcard.id = newcard.id + state.numberOfNewCards;
               dispatch("getAge", newcard);
             }
             commit("cardsLoaded");
@@ -110,7 +115,8 @@ export default new Vuex.Store({
       commit("newCard");
       commit("changeId");
       commit("changeCardCreated");
-      dispatch("getAge", payload);
+      var newcard = payload;
+      dispatch("getAge", newcard);
 
       // commit("getAge", payload);
     },
@@ -134,7 +140,7 @@ export default new Vuex.Store({
         commit("fillCards", payload);
       } else {
         commit("fillNewCards", payload);
-        state.cards.unshift(payload);
+        commit("joinArrays");
         commit("changeCardCreated");
       }
     }
