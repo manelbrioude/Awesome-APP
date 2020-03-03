@@ -115,7 +115,7 @@ export default new Vuex.Store({
       commit("newCard");
       commit("changeId");
       commit("changeCardCreated");
-      var newcard = payload;
+      var newcard = Object.assign({}, payload);
       dispatch("getAge", newcard);
 
       // commit("getAge", payload);

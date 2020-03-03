@@ -80,6 +80,12 @@ export default {
       if (this.$refs.form.validate()) {
         console.log("new card added", this.formResults);
         this.$store.dispatch("addNewCard", this.formResults);
+        this.formResults.first_name = "";
+        this.formResults.last_name = "";
+        this.formResults.email = "";
+        this.formResults.gender = "";
+        this.formResults.birthdate = "";
+        this.formResults.id = "";
       }
     }
   }

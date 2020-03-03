@@ -1,13 +1,5 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="sidebar" app>
-      <v-list>
-        <v-list-item v-for="item in menuItems" :key="item.title" :to="item.path">
-          <v-list-item-content>{{ item.title }}</v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
     <v-toolbar>
       <v-toolbar-title>
         <router-link to="/" tag="span" style="cursor: pointer">{{ appTitle }}</router-link>
